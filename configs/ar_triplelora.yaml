@@ -1,0 +1,87 @@
+# config.yaml  (load with OmegaConf)
+controlnet_dataset_hf_repo_id: ""
+resume_wandb: false
+use_wandb: false
+wandb_key: ""
+wandb_entry: ""
+wandb_project: "PeopleComposer"
+exp_name: "peoplecomposer_train"
+save_dir: multi_person
+checkpoint:
+  type: full_state_dict  
+  model_filename: ""
+  optimizer_filename: adamw_fsdp-model.pt
+model_save_name: model_double_stream_fsdp
+optimizer_name: adamw_fsdp
+
+weight_decay: 0.01
+lr: 3e-4
+lr_decay_frac: 0.05
+warmup_iters: 50
+beta1: 0.9
+beta2: 0.95
+
+model_name: "flux-dev"
+offload_vae: false # Enable VAE offload to reduce memory usage
+offload_when_sample: true
+rank: 512
+seed: 66
+single_blocks: null #"1,2,3,4" # add lora to all single stream blocks
+double_blocks: null # add lora to all double stream blocks
+use_lora: true
+keep_ori_weights: true
+zero_init: false
+
+local_batch_size: 1 
+gradient_accumulation_steps: 4 
+trainable_names: ['img_in.pose_in', 'final_layer.adaLN_modulation_pose', 'final_layer.linear_pose_img']
+max_train_steps: 20000
+is_train: true
+num_workers: 0
+grad_clip: 1.0
+max_norm: 20.0
+###############################
+pose_id_value: 1.0
+lambda_real: 1.0
+lambda_pose: 1.0 # weighted loss for real and pose
+sample_prompts:
+    general_prompt: "Two friends are taking selfies."
+    prompt_0: "The man is holding the phone up with one hand, smiling and leaning slightly toward the camera."
+    prompt_1: "Next to the man, the woman is leaning in as well, making a peace sign with her right hand and tilting her head."
+    prompt_list: ["The man standing in front is holding his phone high with one hand and making a peace sign with the other.", "Behind him, the woman is crouching low and making a peace sign with both hands, also looking at the camera."]
+    bounding_boxes_in_order: [[0.12666666666666668, 0.09020833333333333, 0.575, 0.9652083333333333], [0.465, 0.316875, 0.9233333333333333, 0.7935416666666667]]
+    
+
+sample_steps: 50
+wandb_log_every: 20
+save_checkpoint_every: 200
+sample_every: 200
+use_attn_mask: false # use attn mask for dual attn mod lora processor
+# add_h: false
+time_key: "independent"
+ratio: 0.5 
+weighted_pose_loss: false 
+text_lora: false
+pose_lora: true 
+# real_lora: false
+add_pose_clip: true # if true, add clip to pose stream
+sample_seeds: [958682846, 907733922, 123456789, 987654321, 34534, 123414, 13, 345, 324245, 54647, 65765, 245] # seed for sampling
+multi_seed_version: false # if true, use different seeds for different prompts
+# prompt_type: detailed #general, detailed, both # if true, use general prompt for all prompts
+use_dataset: controlnet
+resolution: 1024
+customize_txt_ids: true 
+customize_img_ids: true 
+resize_to_square: false
+generate_img_ids_type: 1 # 1 is default v1-customize_img_ids
+background_color: "black" # by default, use black
+loss_pose_background_lambda: 1.0 # by default 1.0, same as pose loss
+double_real_lora: false # if true, add lora to real stream
+single_real_lora: false # if true, add lora to real stream
+# real_lora_weight: 1.0 # TODO can add this to try
+real_lr_scale: 1.0 # TODO can add this to try
+attn_mask_type: "mask_condition_for_real" # default none comment it-- draw back to 2.yaml
+use_v1_bbox: false # if true, use previous v1-inference [bbox]
+apply_smaller_pose: 1 # 2 times smaller pose
+infer: false # if true, only infer
+guidance: 1.0 # this is the train guidance -- in inference yaml config, that is inference guidance

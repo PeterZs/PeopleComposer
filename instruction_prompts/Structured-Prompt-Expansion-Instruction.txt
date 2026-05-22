@@ -1,0 +1,244 @@
+📘 Instruction Prompt Template
+Task:
+Given a multi-person scene prompt, expand it into:
+
+1. Global Scene Caption — A fluent 1–2 sentence summary describing the overall activity and main interaction in the scene.
+   - This should preserve the key meaning and social context from the input prompt.
+   - Do not mention individual participants in too much detail here; the focus is on summarizing the shared event.
+
+2. Detailed Caption List — A structured, person-by-person description covering all visible individuals who directly participate in the scene’s main interaction.
+   - Each caption should describe the person’s action, posture, visual focus, and spatial relation to others.
+   - Follow a coherent ordering:
+     - Begin with the primary actor or interaction initiator,
+     - Then list others by spatial proximity, left-to-right, or foreground-to-background (whichever best fits the scene).
+   - Avoid describing irrelevant bystanders or background figures.
+
+3. Layout Plan (Canvas Size + Bounding Boxes) — Provide a normalized [x_min, y_min, x_max, y_max] bounding box for each described person, along with a proposed image canvas size (width, height).
+   - Boxes should align with the actions, poses, and gaze directions described.
+   - Ensure plausible and balanced spatial composition.
+
+Your job is to:
+- Convert this description into a clear, structured, person-by-person breakdown that captures each individual’s role, pose, and interaction.
+- Ensure layout consistency and visual plausibility so that spatial relations, gaze, and actions feel coherent in the composed scene.
+- Expand the scene naturally wherever details are not fully specified — add plausible gestures, micro-actions, lighting cues, and subtle environmental or emotional context that fit the described event.
+- Introduce diversity across variants through composition, camera angle, spatial arrangement, and descriptive enrichment — while always keeping the event type, participants, and meaning consistent with the input prompt.
+---
+
+Rules for Detailed Caption List:
+Expand the generic prompt into vivid, person-by-person descriptions that construct a natural, believable, and compositionally diverse scene.
+The goal is not to invent new scenarios but to organize and enrich what’s already described.
+Focus on clarifying who does what, where, and how they appear.
+You may add or expand details that are not fully specified in the input prompt — such as gestures, expressions, subtle object interactions, clothing description, or lighting context — as long as they remain plausible within the described scene.
+Do not reinterpret or introduce unrelated actions or settings.
+If the input is already highly detailed, do not invent or expand beyond what is said. Instead:
+- Use the provided scene description to extract the global scene paragraph.
+- Split the main content into a structured, per-person caption list.
+- Write the captions using faithful and clear language that preserves all key visual facts.
+- If spatial relations or roles are ambiguous, preserve the order of mentions in the prompt.
+
+
+For each person, include the following (or related) elements to enrich realism and variation:
+
+- Actions:
+  - Describe meaningful actions, not just static posture.
+  - The scene should feel dynamic and visually grounded in human movement.
+
+- Pose / Posture:
+  - Capture how the person’s body is oriented: facing front, turned sideways, leaning forward or back, etc.
+  - Include natural diversity in how much of each person is visible — sometimes full-body, sometimes half-body or upper-body framing.
+  - Different people can appear from slightly different viewpoints or camera distances to create visual depth and asymmetry.
+
+- Interactions:
+  - Encourage clear connections among people — gestures, shared attention, emotional reactions, or object exchanges.
+  - It’s fine to briefly reference another person (e.g., “facing the man beside her,” “looking toward the speaker”) to build continuity between captions.
+  - Each caption still focuses primarily on describing that individual’s behavior and appearance.
+
+- Spatial Relations:
+  - Describe where each person is positioned relative to others (e.g., “Next to him…”, “Behind her…”, “Closer to the front…”).
+  - Write in visual order (left-to-right or front-to-back) matching the bounding box layout.
+
+Every generated scene should look distinct — not just in setting or attire, but in the way it’s composed, who occupies the foreground or background, and how people relate to one another spatially.
+
+---
+
+Believability & Interaction Fit:
+- Keep all scenes physically and socially plausible for the described interaction.
+- Poses and body directions should feel natural for the environment.
+- When the generic prompt is already specific, seek diversity through camera viewpoint, subject placement, or mood rather than inventing unrelated scenarios.
+
+---
+
+Rules for Layout Plan:
+- Use normalized coordinates in [x_min, y_min, x_max, y_max] format.
+- Origin is the top-left corner.
+- Use square or rectangular aspect ratios depending on composition.
+
+Foreground Sizing Guidelines:
+- 2 people:
+  - Each box ~40–50% width, ~65–75% height
+  - Slight overlap indicates closeness
+- 3–4 people:
+  - Each box ~25–35% width
+  - Foreground-dominant
+- 5+ people:
+  - Each box ~15–25% width
+  - Arrange evenly or in staggered depth
+
+Allow partial overlaps (hugging, leaning, passing an item), but all people must remain visible and identifiable.
+All main figures belong to the foreground; avoid tiny distant silhouettes.
+
+---
+
+Scene Fidelity and Visual Diversity Requirements:
+Scene Fidelity Reminder:
+All variants must remain within the same real-world event and environment implied by the generic prompt. The core setting, activity, and social context must stay consistent — do not relocate, reinterpret, or change the event type.
+Diversity should instead arise from camera angle, spatial arrangement, framing, emotional tone, and appearance variation.
+Each variant must differ substantially from others in both scene type and **visual composition**.
+
+
+Context-Preserving Diversity:
+Since the input prompt already specifies environment, attire, and roles, variants should remain faithful to that core scene.  
+However, diversity still matters — expand wherever natural ambiguity exists by varying composition, gesture, and descriptive focus while keeping the same event meaning.
+
+Spatial and Viewpoint Flexibility:
+When the input prompt does not explicitly define spatial positions (e.g., who stands on the left or right), you may vary the relative placement and camera viewpoint across variants to create natural compositional diversity.
+This can include shifting who appears closer to the camera, left/right placement, or changing the viewing angle (front, side, diagonal, or over-the-shoulder).
+Apply this flexibility reasonably — avoid mechanical swaps or unnatural symmetry, and respect any explicit spatial cues present in the prompt.
+
+Appearance and Clothing Consistency:
+When the input prompt explicitly describes clothing, colors, or attire (e.g., "a priest in white robes" or "an assistant in black"), those details must remain unchanged across all variants.
+When attire or appearance is not specified, you may enrich the scene by adding realistic and context-appropriate appearance details — such as clothing color, fabric texture, accessories, or subtle style differences that fit the setting and roles.
+Appearance variation should feel natural and plausible, adding diversity and visual richness without contradicting the prompt’s tone or formality.
+
+Focus of diversity:
+camera viewpoint, shot distance, spatial ordering, subject emphasis, lighting tone, emotional nuance, and additional plausible descriptive details (e.g., hand posture, prop usage, subtle environmental cues).
+
+Not sources of diversity:
+event type, setting category, or character identity.
+
+Each variant should feel like a different photograph or visual capture of the same real-world moment — consistent in meaning but distinct in framing, emphasis, or descriptive richness.
+
+- Scene Type (conditional):
+  - When the generic prompt clearly specifies the environment or event (e.g., a swearing-in ceremony, a classroom lecture, a family dinner), the setting and social context must remain consistent across all variants.
+  - When the generic prompt is under-specified (e.g., two people are talking, a group of friends are laughing), you may introduce plausible setting diversity — such as placing the interaction in an office, café, or park — as long as the interaction and mood remain believable.
+  - Variants should always feel like natural photographs of the same or closely related real-world situation, not unrelated reinterpretations.
+  (For prompts that are related to more specific setting/scene type, diversity comes from shot composition, spatial layout, and appearance. For more vague prompts, moderate scene-setting variation is allowed to enrich realism.)
+- Camera Viewpoint & Shot Diversity:
+  - Use a wide range of natural viewpoints — front-facing, side, diagonal, slightly elevated, or behind-the-scene perspectives.
+  - Alternate between wider and tighter shots: some variants may show full-body views capturing the entire group, while others focus more closely on a few people.
+  - Let the main subject appear differently framed across variants — sometimes centered, sometimes off to the side, occasionally in partial profile or viewed from behind.
+  - Introduce variations in camera height and distance, creating natural differences in scale and spatial layering.
+  - Encourage a mix of static and more immersive compositions that feel like different photographs taken of the same event from multiple angles.
+
+- Scene Layout:
+  Clustered groups, staggered depths, partially overlapping figures, or natural spacing across the frame.
+
+- Actions / Poses / Objects:
+  Diverse gestures, poses, and props that reflect the scene’s dynamics and emphasize interaction.
+
+- Lighting / Emotion / Setting:
+  Subtle variation in tone, time of day, or mood while preserving realism.
+
+Diversity should feel organic — as if multiple photos were taken from different positions and distances around the same unfolding scene, each revealing a unique spatial and emotional perspective.
+
+Minor to moderate descriptive expansion (lighting, fabric texture, gesture nuance, body orientation, or emotional expression) is encouraged to enrich realism and create compositional diversity across variants.
+When spatial relations are not specified, you may choose the most visually balanced or diverse positioning for each variant, as long as the described actions and interactions remain coherent.
+---
+
+Output Format:
+Width: [integer ≤ 1024, multiple of 16 if < 1024]
+Height: [integer ≤ 1024, multiple of 16 if < 1024]
+
+Detailed Caption List: [
+  "caption 1",
+  "caption 2",
+  ...
+]
+
+Layout Plan: [
+  [x1, y1, x2, y2],
+  [x1, y1, x2, y2],
+  ...
+]
+
+---
+
+Dimension Design Rules:
+- Use square or portrait layouts for vertical compositions (e.g., podiums, speakers, performers).
+- Use landscape for wide scenes (e.g., classrooms, protests, parades, group activities).
+- Longest side = 1024; the other side must be a multiple of 16.
+
+---
+Final Reminder:
+
+Treat the input prompt as authoritative.
+Expand through structure, perspective, and realistic descriptive enrichment, not through new storylines or settings.
+Diversity should feel photographic and compositional — grounded in the same scene but revealing new visual or emotional aspects each time.
+"""
+
+📘 In-Context Example 1: Basketball Block
+
+Input Prompt:
+
+A basketball player attempts a layup as another player jumps to block the shot near the basket.
+
+
+LLM Output:
+
+{
+  "global_caption": "A basketball player attempts a layup while another jumps to block the shot near the hoop.",
+  "detailed_caption_list": [
+    "A muscular player in a white jersey drives toward the basket, his left arm extended to cradle the ball and his right shoulder angled slightly forward as he leaps upward.",
+    "A defender in a black jersey rises next to him, stretching his right arm high to contest the shot, with his body turned sideways and his eyes locked on the ball."
+  ],
+  "layout_plan": [
+    [0.25, 0.1, 0.55, 0.95],
+    [0.50, 0.15, 0.85, 0.98]
+  ],
+  "width": 832,
+  "height": 1024
+}
+
+📘 In-Context Example 2: Group Selfie
+
+Input Prompt:
+
+Three women are smiling and posing for a selfie in a stone archway.
+
+
+LLM Output:
+
+{
+  "global_caption": "Three women are smiling and posing for a selfie in a stone archway.",
+  "detailed_caption_list": [
+    "A woman in a white crop top stands on the left, her left hand on her waist and her body angled slightly toward the center, smiling as she leans into the group.",
+    "A woman in a mustard top stands in the center, holding a pink phone out with her right hand to take the selfie, grinning widely and pressing in close to her friends.",
+    "On the right, a woman in a teal blouse laughs with her head tilted toward the center, her right arm resting lightly on the middle woman’s shoulder as she joins in the pose."
+  ],
+  "layout_plan": [
+    [0.05, 0.25, 0.38, 0.95],
+    [0.28, 0.18, 0.65, 0.93],
+    [0.60, 0.20, 0.95, 0.95]
+  ],
+  "width": 1024,
+  "height": 832
+}
+
+JSON_SCHEMA_PROMPT = json.dumps(
+    {
+        "variants": [
+            {
+                "width": "int (≤1024, multiples of 16 unless exactly 1024)",
+                "height": "int (≤1024, multiples of 16 unless exactly 1024)",
+                "detailed_caption_list": [
+                    "caption string in left-to-right or front-to-back order"
+                ],
+                "layout_plan": [
+                    ["x_min", "y_min", "x_max", "y_max (floats between 0 and 1)"]
+                ],
+            }
+        ]
+    },
+    indent=2,
+)
+

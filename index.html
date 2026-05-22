@@ -1,0 +1,1123 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Composing People Together | SIGGRAPH 2026</title>
+    <meta
+      name="description"
+      content="Composing People Together: Iterative Pose-Image Generation for Multi-Person Interaction Scenes."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Source+Serif+4:wght@500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #fbfaf7;
+        --paper: #ffffff;
+        --surface: #f4f6f7;
+        --surface-strong: #ebeff2;
+        --ink: #171412;
+        --text: #282f38;
+        --muted: #646c76;
+        --faint: #8a929d;
+        --line: #dde2e7;
+        --line-strong: #bfc8d1;
+        --blue: #285ea8;
+        --teal: #0d7568;
+        --amber: #a56622;
+        --violet: #6155b5;
+        --max: 1380px;
+        --measure: 1180px;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--text);
+        font-family: "Inter", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        font-size: 18px;
+        line-height: 1.58;
+        text-rendering: optimizeLegibility;
+      }
+
+      a {
+        color: var(--blue);
+        text-decoration: none;
+        text-underline-offset: 3px;
+      }
+
+      a:hover {
+        text-decoration: underline;
+      }
+
+      img,
+      video {
+        max-width: 100%;
+      }
+
+      .page {
+        overflow: hidden;
+      }
+
+      .hero {
+        padding: 58px 22px 34px;
+        background:
+          linear-gradient(180deg, rgba(255, 255, 255, 0.68), rgba(251, 250, 247, 0) 58%),
+          radial-gradient(circle at 18% 0%, rgba(13, 117, 104, 0.06), transparent 34%),
+          radial-gradient(circle at 88% 10%, rgba(40, 94, 168, 0.055), transparent 30%);
+        text-align: center;
+      }
+
+      .hero-inner {
+        max-width: var(--max);
+        margin: 0 auto;
+      }
+
+      h1 {
+        margin: 0 auto 10px;
+        max-width: none;
+        color: var(--ink);
+        font-family: "Source Serif 4", Georgia, "Times New Roman", serif;
+        font-size: clamp(3rem, 6.1vw, 5.25rem);
+        font-weight: 650;
+        line-height: 1.04;
+        letter-spacing: 0;
+        white-space: nowrap;
+      }
+
+      .subtitle {
+        margin: 0 auto;
+        max-width: 1120px;
+        color: #34312e;
+        font-size: clamp(1.48rem, 2.25vw, 2.05rem);
+        font-weight: 500;
+        line-height: 1.36;
+      }
+
+      .authors {
+        margin: 22px auto 0;
+        color: var(--ink);
+        font-size: 1.28rem;
+        font-weight: 600;
+      }
+
+      .authors a {
+        color: var(--ink);
+        border-bottom: 1px solid rgba(23, 20, 18, 0.24);
+      }
+
+      .authors a:hover {
+        border-bottom-color: var(--ink);
+        text-decoration: none;
+      }
+
+      .affiliation {
+        margin: 4px auto 0;
+        color: var(--muted);
+        font-size: 1.14rem;
+      }
+
+      .venue {
+        margin: 13px auto 0;
+        color: #3d444f;
+        font-size: 1.2rem;
+        font-weight: 700;
+      }
+
+      .actions {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin: 26px 0 0;
+      }
+
+      .action {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 46px;
+        gap: 9px;
+        padding: 11px 19px;
+        border: 1px solid rgba(126, 139, 153, 0.42);
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.74);
+        color: var(--ink);
+        font-size: 1.04rem;
+        font-weight: 700;
+        box-shadow: 0 8px 22px rgba(27, 33, 42, 0.06);
+        backdrop-filter: blur(10px);
+        transition: border-color 160ms ease, transform 160ms ease, box-shadow 160ms ease;
+      }
+
+      .action:hover {
+        border-color: rgba(40, 94, 168, 0.55);
+        box-shadow: 0 10px 28px rgba(27, 33, 42, 0.09);
+        text-decoration: none;
+        transform: translateY(-1px);
+      }
+
+      .action svg {
+        width: 19px;
+        height: 19px;
+        stroke: currentColor;
+        fill: none;
+        stroke-width: 2;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+      }
+
+      .hero-media {
+        max-width: 1480px;
+        margin: 44px auto 0;
+      }
+
+      .media-tabs {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin: 0 0 12px;
+      }
+
+      .media-tab {
+        min-height: 38px;
+        border: 1px solid rgba(126, 139, 153, 0.34);
+        border-radius: 999px;
+        padding: 8px 15px;
+        background: rgba(255, 255, 255, 0.66);
+        color: #374151;
+        font: inherit;
+        font-size: 1rem;
+        font-weight: 700;
+        cursor: pointer;
+      }
+
+      .media-tab.is-active {
+        border-color: rgba(40, 94, 168, 0.46);
+        background: #ffffff;
+        color: var(--ink);
+      }
+
+      .media-stage {
+        width: 100%;
+        background: transparent;
+      }
+
+      .media-panel {
+        display: none;
+      }
+
+      .media-panel.is-active {
+        display: block;
+      }
+
+      .teaser-media {
+        display: block;
+        width: 100%;
+        height: auto;
+      }
+
+      .hero-caption {
+        margin: 16px auto 0;
+        max-width: var(--measure);
+        color: var(--muted);
+        font-size: 1.28rem;
+        line-height: 1.55;
+      }
+
+      .section {
+        padding: 72px 22px;
+      }
+
+      .section.alt {
+        background: #ffffff;
+        border-top: 1px solid var(--line);
+        border-bottom: 1px solid var(--line);
+      }
+
+      .section-inner {
+        max-width: var(--max);
+        margin: 0 auto;
+      }
+
+      .section-head {
+        max-width: var(--measure);
+        margin: 0 auto 34px;
+        text-align: center;
+      }
+
+      .section-head.wide-copy {
+        text-align: left;
+      }
+
+      .section-head.wide-copy h2 {
+        text-align: center;
+      }
+
+      h2 {
+        margin: 0 0 10px;
+        color: var(--ink);
+        font-family: "Source Serif 4", Georgia, "Times New Roman", serif;
+        font-size: clamp(2.25rem, 3.2vw, 3.05rem);
+        font-weight: 650;
+        line-height: 1.08;
+        letter-spacing: 0;
+      }
+
+      h3 {
+        letter-spacing: 0;
+      }
+
+      .section-lead {
+        margin: 0;
+        color: var(--muted);
+        font-size: 1.32rem;
+        line-height: 1.58;
+      }
+
+      .section-link {
+        margin: 14px 0 0;
+        font-size: 1.18rem;
+        font-weight: 700;
+      }
+
+      .benchmark-head .section-lead {
+        white-space: nowrap;
+      }
+
+      .benchmark-copy {
+        max-width: var(--max);
+        margin: 0 auto;
+        text-align: left;
+      }
+
+      .abstract-callout {
+        max-width: var(--measure);
+        margin: 0 auto 22px;
+        padding: 0 0 0 20px;
+        border-left: 3px solid var(--teal);
+        color: var(--ink);
+        font-family: "Source Serif 4", Georgia, "Times New Roman", serif;
+        font-size: 1.22rem;
+        font-weight: 600;
+        line-height: 1.45;
+      }
+
+      .abstract-text {
+        max-width: var(--measure);
+        margin: 0 auto;
+        color: #2f3948;
+        font-size: 1.25rem;
+        line-height: 1.7;
+        text-align: justify;
+        text-align-last: left;
+      }
+
+      .method-stack {
+        display: grid;
+        gap: 42px;
+      }
+
+      .method-row {
+        display: grid;
+        grid-template-columns: minmax(0, 1.55fr) minmax(360px, 0.85fr);
+        gap: 44px;
+        align-items: center;
+      }
+
+      .method-row:nth-child(even) {
+        grid-template-columns: minmax(360px, 0.85fr) minmax(0, 1.55fr);
+      }
+
+      .method-row:nth-child(even) .method-figure {
+        order: 2;
+      }
+
+      .method-figure {
+        margin: 0;
+      }
+
+      .method-figure img {
+        display: block;
+        width: 100%;
+        background: #ffffff;
+      }
+
+      .eyebrow {
+        display: inline-flex;
+        margin: 0 0 10px;
+        color: var(--teal);
+        font-size: 0.9rem;
+        font-weight: 800;
+        letter-spacing: 0;
+        text-transform: uppercase;
+      }
+
+      .method-copy h3 {
+        margin: 0 0 10px;
+        color: var(--ink);
+        font-size: 1.52rem;
+        line-height: 1.25;
+      }
+
+      .method-copy p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 1.22rem;
+        line-height: 1.65;
+        text-align: justify;
+        text-align-last: left;
+      }
+
+      .benchmark-flow {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 18px;
+        margin: 0 auto 38px;
+      }
+
+      .flow-card,
+      .tier-card,
+      .reference-card,
+      .viz-callout {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: #ffffff;
+        box-shadow: 0 10px 26px rgba(27, 33, 42, 0.045);
+      }
+
+      .flow-card {
+        padding: 22px 22px 24px;
+      }
+
+      .flow-index {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 32px;
+        height: 32px;
+        margin-bottom: 12px;
+        border-radius: 50%;
+        background: #23201d;
+        color: #ffffff;
+        font-size: 0.92rem;
+        font-weight: 800;
+      }
+
+      .flow-card h3 {
+        margin: 0 0 6px;
+        color: var(--ink);
+        font-size: 1.22rem;
+      }
+
+      .flow-card p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 1.12rem;
+        line-height: 1.6;
+      }
+
+      .benchmark-example {
+        display: grid;
+        grid-template-columns: 340px minmax(0, 1fr);
+        gap: 30px;
+        align-items: start;
+      }
+
+      .reference-card {
+        position: sticky;
+        top: 20px;
+        padding: 14px;
+      }
+
+      .reference-card img {
+        display: block;
+        width: 100%;
+        border-radius: 4px;
+      }
+
+      .caption,
+      figcaption {
+        color: var(--muted);
+        font-size: 1.08rem;
+      }
+
+      .reference-card figcaption {
+        margin-top: 10px;
+      }
+
+      .tier-cards {
+        display: grid;
+        gap: 12px;
+      }
+
+      .tier-card {
+        padding: 16px 18px;
+      }
+
+      .tier-label {
+        display: inline-flex;
+        margin: 0 0 8px;
+        padding: 4px 9px;
+        border-radius: 999px;
+        color: #ffffff;
+        font-size: 0.9rem;
+        font-weight: 800;
+      }
+
+      .tier-a {
+        background: var(--amber);
+      }
+
+      .tier-b {
+        background: var(--violet);
+      }
+
+      .tier-c {
+        background: var(--blue);
+      }
+
+      .tier-card p {
+        margin: 6px 0;
+        color: #343d4a;
+        font-size: 1.12rem;
+        line-height: 1.62;
+      }
+
+      .tier-card strong {
+        color: var(--ink);
+      }
+
+      .prompt-a {
+        color: #9b541a;
+        font-style: italic;
+      }
+
+      .prompt-b {
+        color: #5d3fb5;
+        font-style: italic;
+      }
+
+      .question-a {
+        color: #9b541a;
+        font-weight: 800;
+      }
+
+      .question-b {
+        color: #5d3fb5;
+        font-weight: 800;
+      }
+
+      .question-c {
+        color: #174ea6;
+        font-weight: 800;
+      }
+
+      .viz-callout {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 28px;
+        align-items: center;
+        max-width: 1120px;
+        margin: 0 auto 34px;
+        padding: 26px 28px;
+      }
+
+      .viz-callout h3 {
+        margin: 0 0 7px;
+        color: var(--ink);
+        font-size: 1.42rem;
+      }
+
+      .viz-callout p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 1.2rem;
+        line-height: 1.6;
+      }
+
+      .viz-link {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 46px;
+        padding: 11px 18px;
+        border-radius: 999px;
+        background: #23201d;
+        color: #ffffff;
+        font-size: 1.12rem;
+        font-weight: 800;
+        white-space: nowrap;
+      }
+
+      .viz-link:hover {
+        color: #ffffff;
+        text-decoration: none;
+      }
+
+      .gallery-shell {
+        display: grid;
+        grid-template-columns: auto minmax(0, 1fr) auto;
+        gap: 14px;
+        align-items: center;
+        margin: 0 auto;
+        width: min(1620px, calc(100vw - 44px));
+        max-width: 1620px;
+      }
+
+      .gallery-track {
+        display: grid;
+        grid-auto-flow: column;
+        grid-auto-columns: 100%;
+        gap: 16px;
+        overflow-x: auto;
+        scroll-behavior: smooth;
+        scroll-snap-type: x mandatory;
+        scrollbar-width: thin;
+        scrollbar-color: var(--line-strong) transparent;
+      }
+
+      .gallery-track::-webkit-scrollbar {
+        height: 8px;
+      }
+
+      .gallery-track::-webkit-scrollbar-thumb {
+        background: var(--line-strong);
+        border-radius: 999px;
+      }
+
+      .gallery-item {
+        margin: 0;
+        scroll-snap-align: center;
+      }
+
+      .gallery-item img {
+        display: block;
+        width: 100%;
+        background: #ffffff;
+      }
+
+      .gallery-btn {
+        width: 44px;
+        height: 44px;
+        display: grid;
+        place-items: center;
+        border: 1px solid var(--line-strong);
+        border-radius: 50%;
+        background: #ffffff;
+        color: var(--ink);
+        font: inherit;
+        font-size: 1.4rem;
+        font-weight: 800;
+        cursor: pointer;
+      }
+
+      .gallery-btn:hover {
+        background: var(--surface);
+      }
+
+      .gallery-dots {
+        display: flex;
+        justify-content: center;
+        gap: 8px;
+        margin: 14px auto 0;
+      }
+
+      .gallery-dot {
+        width: 8px;
+        height: 8px;
+        border: 0;
+        border-radius: 999px;
+        padding: 0;
+        background: #b6c0cc;
+        cursor: pointer;
+      }
+
+      .gallery-dot.active {
+        width: 22px;
+        background: var(--ink);
+      }
+
+      .gallery-note {
+        margin: 12px auto 0;
+        color: var(--faint);
+        font-size: 1.1rem;
+        text-align: center;
+      }
+
+      .citation-box {
+        max-width: 1080px;
+        margin: 0 auto;
+        padding: 18px 20px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: #ffffff;
+        color: #263141;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+        font-size: 0.95rem;
+        line-height: 1.55;
+        overflow-x: auto;
+        white-space: pre;
+      }
+
+      .site-footer {
+        padding: 28px 22px 38px;
+        color: var(--muted);
+        font-size: 1rem;
+        text-align: center;
+      }
+
+      .site-footer p {
+        margin: 0;
+      }
+
+      .meta-info {
+        max-width: var(--max);
+        margin: 20px auto 0;
+        padding: 0 22px 34px;
+        color: var(--faint);
+        font-size: 0.9rem;
+      }
+
+      .meta-info details {
+        border-top: 1px solid var(--line);
+        padding-top: 12px;
+      }
+
+      .meta-info summary {
+        cursor: pointer;
+        font-weight: 700;
+      }
+
+      .meta-info ul {
+        margin: 10px 0 0;
+        padding-left: 20px;
+      }
+
+      @media (max-width: 980px) {
+        .method-row,
+        .method-row:nth-child(even) {
+          grid-template-columns: 1fr;
+        }
+
+        .method-row:nth-child(even) .method-figure {
+          order: 0;
+        }
+
+        .benchmark-flow {
+          grid-template-columns: 1fr;
+        }
+
+        .benchmark-example {
+          grid-template-columns: 1fr;
+        }
+
+        .reference-card {
+          position: static;
+          max-width: 360px;
+          margin: 0 auto;
+        }
+      }
+
+      @media (max-width: 720px) {
+        .hero {
+          padding-top: 34px;
+        }
+
+        h1 {
+          font-size: clamp(1.72rem, 7.2vw, 3.2rem);
+        }
+
+        .subtitle {
+          font-size: clamp(1.16rem, 4.4vw, 1.48rem);
+        }
+
+        .actions {
+          align-items: stretch;
+          flex-direction: column;
+          max-width: 390px;
+          margin-left: auto;
+          margin-right: auto;
+        }
+
+        .action {
+          width: 100%;
+        }
+
+        .section {
+          padding: 50px 18px;
+        }
+
+        .viz-callout {
+          grid-template-columns: 1fr;
+          gap: 16px;
+        }
+
+        .viz-link {
+          width: 100%;
+        }
+
+        .gallery-shell {
+          grid-template-columns: 1fr;
+          width: min(1620px, calc(100vw - 36px));
+        }
+
+        .gallery-btn {
+          display: none;
+        }
+
+        .meta-info {
+          padding-left: 18px;
+          padding-right: 18px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <header class="hero">
+        <div class="hero-inner">
+          <h1>Composing People Together</h1>
+          <p class="subtitle">Iterative Pose-Image Generation for Multi-Person Interaction Scenes</p>
+          <p class="authors">
+            <a href="http://lilydaytoy.github.io/">Wenxuan Peng</a>,
+            <a href="https://www.cs.cornell.edu/~bharathh/">Bharath Hariharan</a>, and
+            <a href="https://www.hadarelor.com/">Hadar Averbuch-Elor</a>
+          </p>
+          <p class="affiliation">Cornell University</p>
+          <p class="venue">Accepted to SIGGRAPH 2026</p>
+
+          <nav class="actions" aria-label="Project links">
+            <a class="action" href="#" aria-label="arXiv coming soon" title="arXiv identifier coming soon">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M6 3h7l5 5v13a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z" />
+                <path d="M13 3v6h6" />
+                <path d="M8 13h8M8 17h8" />
+              </svg>
+              arXiv
+            </a>
+            <a class="action" href="https://github.com/Cornell-VAILab/PeopleComposer">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M8 9l-4 3 4 3" />
+                <path d="M16 9l4 3-4 3" />
+                <path d="M10 19l4-14" />
+              </svg>
+              Code
+            </a>
+            <a class="action" href="eval_results/drawwaldoworlds_benchmark.json">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M4 19V5" />
+                <path d="M4 19h16" />
+                <path d="M8 15v-5" />
+                <path d="M12 15V8" />
+                <path d="M16 15v-3" />
+              </svg>
+              DrawWaldoWorlds Benchmark
+            </a>
+          </nav>
+
+          <div class="hero-media" aria-label="Project teaser media">
+            <div class="media-tabs" role="tablist" aria-label="Teaser media">
+              <button class="media-tab is-active" type="button" data-target="teaser-video">Animation</button>
+              <button class="media-tab" type="button" data-target="teaser-image">Teaser Figure</button>
+            </div>
+            <div class="media-stage">
+              <div class="media-panel is-active" id="teaser-video">
+                <video class="teaser-media" src="assets/animation5.mp4" autoplay loop muted playsinline></video>
+              </div>
+              <div class="media-panel" id="teaser-image">
+                <img class="teaser-media" src="assets/teaser.png" alt="Overview teaser for Composing People Together" />
+              </div>
+            </div>
+            <p class="hero-caption">
+              PeopleComposer jointly generates pose and image, using pose as an evolving scene state to compose multi-person interaction scenes step by step.
+            </p>
+          </div>
+        </div>
+      </header>
+
+      <main>
+        <section class="section" id="abstract">
+          <div class="section-inner">
+            <div class="section-head">
+              <h2>Abstract</h2>
+            </div>
+            <p class="abstract-text">
+              Despite recent progress, text-to-image models still struggle to generate semantically diverse and compositionally accurate multi-person interaction scenes, often collapsing to repetitive layouts, stereotypical poses, and poorly grounded interactions. In this work, we bridge this gap by introducing a dual pose--image representation that brings person-centric structural priors into pretrained diffusion transformers. Our model jointly predicts a 2D pose visualization image and its corresponding RGB image, enabling structure and appearance to co-evolve during learning. At its core, a cross-modal alignment scheme binds text, pose, and image representations, ensuring consistent grounding across modalities. Furthermore, we design an iterative scene construction scheme, progressively generating complex multi-human interactions while effectively decomposing the overall generation complexity. Extensive experiments demonstrate that our method substantially improves prompt alignment and scene diversity in multi-person image generation.
+            </p>
+          </div>
+        </section>
+
+        <section class="section alt" id="method">
+          <div class="section-inner">
+            <div class="section-head wide-copy">
+              <h2>Method</h2>
+              <p class="section-lead">The method combines a structural pose stream with role-aware cross-modal alignment, then uses pose as the state for iterative scene construction.</p>
+            </div>
+            <div class="method-stack">
+              <article class="method-row">
+                <figure class="method-figure">
+                  <img src="assets/method.png" alt="Dual pose-image diffusion transformer overview" />
+                </figure>
+                <div class="method-copy">
+                  <span class="eyebrow">Representation</span>
+                  <h3>Dual Pose-Image Generation</h3>
+                  <p>
+                    PeopleComposer encodes pose visualizations and RGB images as paired latent streams inside a diffusion transformer. Pose is predicted jointly with the image, giving the model an explicit, appearance-independent structure for human body configuration. Role-aware rotary positional encoding binds each person's text, bounding box region, pose tokens, and image tokens through a shared role index.
+                  </p>
+                </div>
+              </article>
+
+              <article class="method-row">
+                <figure class="method-figure">
+                  <img src="assets/ar.png" alt="Iterative pose-image generation process" />
+                </figure>
+                <div class="method-copy">
+                  <span class="eyebrow">Generation</span>
+                  <h3>Iterative Scene Construction</h3>
+                  <p>
+                    Instead of generating all people at once, the model constructs the scene one person at a time. At each stage, the previously generated pose image represents the current scene state; the next person's description and layout are added; and the model predicts an updated pose state and image. The final-stage image is used as the generated result.
+                  </p>
+                </div>
+              </article>
+            </div>
+          </div>
+        </section>
+
+        <section class="section" id="benchmark">
+          <div class="section-inner">
+            <div class="section-head wide-copy benchmark-head">
+              <h2>DrawWaldoWorlds Benchmark</h2>
+              <div class="benchmark-copy">
+                <p class="section-lead">
+                  DrawWaldoWorlds evaluates whether models can ground interaction roles and relations, not just place multiple people in a scene.
+                </p>
+                <p class="section-link">
+                  <a href="eval_results/drawwaldoworlds_benchmark.json">Benchmark prompt/question JSON</a>
+                </p>
+              </div>
+            </div>
+
+            <div class="benchmark-flow" aria-label="Benchmark construction overview">
+              <article class="flow-card">
+                <span class="flow-index">1</span>
+                <h3>Start From Interaction Images</h3>
+                <p>We build on the Waldo and Wenda test set, which contains real images annotated with human-human interactions for vision-language reasoning.</p>
+              </article>
+              <article class="flow-card">
+                <span class="flow-index">2</span>
+                <h3>Create Tiered Prompts</h3>
+                <p>A multimodal LLM reads each image and its interaction annotation, then writes prompts at three levels: short interaction-focused, moderately detailed, and fine-grained image-specific.</p>
+              </article>
+              <article class="flow-card">
+                <span class="flow-index">3</span>
+                <h3>Evaluate With VQA Checks</h3>
+                <p>Generated images are judged with yes/no questions matched to each tier. The reference image is used to construct the benchmark item, not as an input to the text-to-image model.</p>
+              </article>
+            </div>
+
+            <div class="benchmark-example">
+              <figure class="reference-card">
+                <img src="assets/012551.jpg" alt="Reference image 012551 from Waldo and Wenda" />
+                <figcaption>
+                  Reference image ID 012551 from <a href="https://tau-vailab.github.io/learning-interactions/" target="_blank" rel="noopener">Waldo and Wenda</a>. This image anchors prompt and question construction.
+                </figcaption>
+              </figure>
+
+              <div class="tier-cards">
+                <article class="tier-card">
+                  <span class="tier-label tier-a">Tier A</span>
+                  <p><strong>Prompt:</strong> <span class="prompt-a">"Two uniformed men escort two suited men through an honor cordon as snow falls."</span></p>
+                  <p><strong>Question:</strong> "Does this figure show {Prompt}?"</p>
+                </article>
+
+                <article class="tier-card">
+                  <span class="tier-label tier-b">Tier B</span>
+                  <p><strong>Prompt:</strong> <span class="prompt-a">"Two uniformed service members escort two suited men,</span> <span class="prompt-b">each service member holding an umbrella for one of the men</span> as they walk on the wet stone steps."</p>
+                  <p><strong>Question:</strong> "Does this figure show {Prompt}?"</p>
+                </article>
+
+                <article class="tier-card">
+                  <span class="tier-label tier-c">Tier C</span>
+                  <p><strong>Prompt:</strong> "In the center, two men in dark suits and ties walk side by side on wet stone steps, snow falling lightly around them. The man on the left walks with an easy stride, while the older man beside him moves in step, his expression calm and composed. To their left, a uniformed escort holds an umbrella angled over the younger man, walking slightly ahead to keep pace. Another escort follows behind on the right, holding an umbrella over the older man. The four move together in a measured, formal rhythm, their umbrellas dusted with snow as they ascend."</p>
+                  <p><strong>Decomposed questions:</strong></p>
+                  <p><span class="question-a">a.</span> "Does the image show two men in dark suits and ties walking side by side in the center, with one uniformed escort on each side accompanying them as they walk, in a snowy setting on stone steps?"</p>
+                  <p><span class="question-b">b.</span> "Among the four people, is there a younger man in formal attire walking in the center-left, with a uniformed escort to the left holding an umbrella over him while walking slightly ahead?"</p>
+                  <p><span class="question-c">c.</span> "Among the four people, is there an older man walking in the center-right, with a uniformed escort following slightly behind on the right while holding an umbrella over him?"</p>
+                </article>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="section alt" id="results">
+          <div class="section-inner">
+            <div class="section-head wide-copy">
+              <h2>Results Gallery</h2>
+              <p class="section-lead">
+                Representative Tier C examples show PeopleComposer following fine-grained interaction prompts while revealing the iterative pose-image construction process.
+              </p>
+            </div>
+
+            <div class="viz-callout">
+              <div>
+                <h3>Interactive Visualization</h3>
+                <p>
+                  We provide an interactive visualization with 50 randomly selected DrawWaldoWorlds samples, including tiered prompts, generated examples, comparisons to other models, and VQA score annotations.
+                </p>
+              </div>
+              <a class="viz-link" href="interactive_visualization/index.html">Open Visualization</a>
+            </div>
+          </div>
+
+          <div class="gallery-shell">
+            <button class="gallery-btn" type="button" data-dir="-1" aria-label="Previous result">&#8249;</button>
+            <div class="gallery-track" aria-live="polite" id="results-track">
+              <figure class="gallery-item">
+                <img src="assets/5.png" alt="PeopleComposer result comparison 1" />
+              </figure>
+              <figure class="gallery-item">
+                <img src="assets/2.png" alt="PeopleComposer result comparison 2" />
+              </figure>
+              <figure class="gallery-item">
+                <img src="assets/1.png" alt="PeopleComposer result comparison 3" />
+              </figure>
+              <figure class="gallery-item">
+                <img src="assets/3.png" alt="PeopleComposer result comparison 4" />
+              </figure>
+              <figure class="gallery-item">
+                <img src="assets/4.png" alt="PeopleComposer result comparison 5" />
+              </figure>
+            </div>
+            <button class="gallery-btn" type="button" data-dir="1" aria-label="Next result">&#8250;</button>
+          </div>
+          <div class="gallery-dots" id="results-dots"></div>
+          <p class="gallery-note">Swipe horizontally or use the arrows to browse examples.</p>
+        </section>
+
+        <section class="section" id="citation">
+          <div class="section-inner">
+            <div class="section-head">
+              <h2>Citation</h2>
+            </div>
+            <pre class="citation-box">@inproceedings{peng2026composing,
+  title     = {Composing People Together: Iterative Pose-Image Generation for Multi-Person Interaction Scenes},
+  author    = {Peng, Wenxuan and Hariharan, Bharath and Averbuch-Elor, Hadar},
+  booktitle = {SIGGRAPH Conference Papers},
+  year      = {2026},
+  doi       = {10.1145/3799902.3811129}
+}</pre>
+          </div>
+        </section>
+      </main>
+
+      <footer class="site-footer">
+        <p>Composing People Together: Iterative Pose-Image Generation for Multi-Person Interaction Scenes.</p>
+      </footer>
+
+      <section class="meta-info" id="meta-information" aria-label="Meta Information">
+        <details>
+          <summary>Meta Information</summary>
+          <ul>
+            <li>Prompt used: Release-prep visual refinement request for the SIGGRAPH 2026 PeopleComposer project page, with instructions to keep the page concise, professional, and previewed through S3.</li>
+            <li>Prompt used: Follow-up refinement request to simplify the publication header, remove media borders, keep animation looping, reorder sections to Method, Benchmark, Results Gallery, clarify benchmark construction from the paper, remove the tiered evaluation grid, and move the interactive visualization callout into Results Gallery.</li>
+            <li>Prompt used: Follow-up request to link Wenxuan Peng, Bharath Hariharan, and Hadar Averbuch-Elor to their personal homepages.</li>
+            <li>Prompt used: Follow-up visual refinement request to improve the webpage typography and overall professional style, especially balancing the title, subtitle, and author sizes.</li>
+            <li>Prompt used: Follow-up request to replace the webpage Abstract with the original paper abstract text from revision_sec/00abstract.tex.</li>
+            <li>Prompt used: Follow-up layout request to keep the main title on one line, widen the page text, and increase small typography across the publication page.</li>
+            <li>Prompt used: Follow-up request to reconstruct the DrawWaldoWorlds benchmark prompt/question JSON from the previous full evaluation results and link it from the project page.</li>
+            <li>Prompt used: Follow-up typography request to further enlarge small text, widen section leads, avoid awkward centered short final lines, and justify long Abstract/Method copy.</li>
+            <li>Prompt used: Follow-up request to keep the DrawWaldoWorlds Benchmark lead on one line and center the benchmark JSON link.</li>
+            <li>Prompt used: Follow-up request to align the DrawWaldoWorlds Benchmark lead text with the left edge of the first benchmark construction card.</li>
+            <li>Working directory: /mnt/localssd/Composing-People-Together-Iterative-Pose-Image-Generation-for-Multi-Person-Interaction-Scenes-4-</li>
+            <li>Primary HTML file: /mnt/localssd/Composing-People-Together-Iterative-Pose-Image-Generation-for-Multi-Person-Interaction-Scenes-4-/PeopleComposer/index.html</li>
+            <li>Generated benchmark JSON: /mnt/localssd/Composing-People-Together-Iterative-Pose-Image-Generation-for-Multi-Person-Interaction-Scenes-4-/PeopleComposer/eval_results/drawwaldoworlds_benchmark.json</li>
+            <li>Paper source files read: /mnt/localssd/Composing-People-Together-Iterative-Pose-Image-Generation-for-Multi-Person-Interaction-Scenes-4-/revision_sec/03method.tex and /mnt/localssd/Composing-People-Together-Iterative-Pose-Image-Generation-for-Multi-Person-Interaction-Scenes-4-/revision_sec/05experiments.tex</li>
+            <li>Referenced assets directory: /mnt/localssd/Composing-People-Together-Iterative-Pose-Image-Generation-for-Multi-Person-Interaction-Scenes-4-/PeopleComposer/assets/</li>
+            <li>Referenced visualization directory: /mnt/localssd/Composing-People-Together-Iterative-Pose-Image-Generation-for-Multi-Person-Interaction-Scenes-4-/PeopleComposer/interactive_visualization/</li>
+            <li>External layout references consulted: https://cornell-vailab.github.io/Raster2Seq/ and SIGGRAPH-style project pages found during web search.</li>
+          </ul>
+        </details>
+      </section>
+    </div>
+
+    <script>
+      const track = document.querySelector("#results-track");
+      const buttons = document.querySelectorAll(".gallery-btn");
+      const dotsWrap = document.querySelector("#results-dots");
+
+      if (track && buttons.length && dotsWrap) {
+        const items = Array.from(track.querySelectorAll(".gallery-item"));
+        const dots = items.map((_, idx) => {
+          const btn = document.createElement("button");
+          btn.className = "gallery-dot";
+          btn.type = "button";
+          btn.setAttribute("aria-label", `Go to slide ${idx + 1}`);
+          btn.addEventListener("click", () => {
+            const width = track.clientWidth;
+            track.scrollTo({ left: idx * width, behavior: "smooth" });
+          });
+          dotsWrap.appendChild(btn);
+          return btn;
+        });
+
+        const setActive = () => {
+          const width = track.clientWidth || 1;
+          const idx = Math.max(0, Math.min(dots.length - 1, Math.round(track.scrollLeft / width)));
+          dots.forEach((dot, dotIdx) => dot.classList.toggle("active", dotIdx === idx));
+        };
+
+        setActive();
+        track.addEventListener("scroll", () => {
+          window.requestAnimationFrame(setActive);
+        });
+
+        buttons.forEach((btn) => {
+          btn.addEventListener("click", () => {
+            const dir = Number(btn.dataset.dir || 1);
+            const width = track.clientWidth;
+            track.scrollBy({ left: dir * width, behavior: "smooth" });
+          });
+        });
+      }
+
+      const mediaTabs = document.querySelectorAll(".media-tab");
+      const mediaPanels = document.querySelectorAll(".media-panel");
+      const teaserVideo = document.querySelector("#teaser-video video");
+
+      if (mediaTabs.length && mediaPanels.length) {
+        mediaTabs.forEach((btn) => {
+          btn.addEventListener("click", () => {
+            const target = btn.dataset.target;
+            mediaTabs.forEach((tab) => tab.classList.remove("is-active"));
+            mediaPanels.forEach((panel) => panel.classList.remove("is-active"));
+            btn.classList.add("is-active");
+            const active = document.getElementById(target);
+            if (active) {
+              active.classList.add("is-active");
+            }
+            if (teaserVideo && target === "teaser-video") {
+              teaserVideo.currentTime = teaserVideo.paused ? 0 : teaserVideo.currentTime;
+              teaserVideo.play().catch(() => {});
+            } else if (teaserVideo) {
+              teaserVideo.pause();
+            }
+          });
+        });
+      }
+    </script>
+  </body>
+</html>

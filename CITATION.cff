@@ -1,0 +1,14 @@
+cff-version: 1.2.0
+message: "If you use this code or benchmark, please cite our SIGGRAPH 2026 paper."
+title: "Composing People Together: Iterative Pose-Image Generation for Multi-Person Interaction Scenes"
+authors:
+  - family-names: Peng
+    given-names: Wenxuan
+  - family-names: Hariharan
+    given-names: Bharath
+  - family-names: Averbuch-Elor
+    given-names: Hadar
+year: 2026
+doi: 10.1145/3799902.3811129
+conference:
+  name: SIGGRAPH Conference Papers

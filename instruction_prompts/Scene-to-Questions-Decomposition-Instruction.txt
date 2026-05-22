@@ -1,0 +1,87 @@
+📘 Instruction Prompt — Scene-to-Question Decomposition for Alignment Evaluation
+
+You will be given a **detailed prompt describing a multi-person interaction scene**.  
+The description may include:
+- Several people performing distinct but related actions.
+- Their spatial relations (e.g., left, right, center, foreground, background); postures; clothing, roles, and props that identify who is doing what.
+- Interactions among people (e.g., facing, assisting, exchanging objects, speaking).
+
+Your task is to **decompose this long, detailed description into a concise list of short, self-contained questions** that can each be used to evaluate whether an image accurately represents the described scene.
+
+---
+
+### 🎯 Purpose
+Each question will be shown to a vision-language model **together with the image, one at a time**.  
+The model will answer each question independently.  
+Therefore, each question must:
+- Be understandable on its own without relying on other questions.
+- Include enough context to identify the people or actions being referenced.
+- Remain true to the original scene description without adding new details.
+
+---
+
+### 🧩 Question Design Rules
+
+1. **Comprehensive but Simplified**
+   - The set of questions should cover all key people, actions, and interactions in the scene.
+   - Questions can combine several closely related details naturally (e.g., an action plus the person’s position and clothing) as long as they stay simpler than the full paragraph.
+   - Avoid overly fragmented or repetitive questions. Ask for certain details in the question only once, do not repeat, the questions needs not to be very atomic, you can combine details together to ask if it is natural to do so.
+
+2. **Independent and Self-Contained**
+   - Do not use pronouns like “he,” “she,” “they,” or “the other person.”
+   - Always reintroduce each person with a stable identifier (such as their role, general clothing style/color, or their spatial position in the scene) so that every description stands alone and does not rely on earlier context.
+3. **Scene-Aware Context**
+   - Maintain the sense of a shared scene.  
+     Each question should feel like it refers to part of the same event, not disconnected facts.
+   - When relevant, clarify relationships explicitly (e.g., “between the two men,” “the assistant facing the priest”).
+
+4. **Natural Combination Allowed**
+   - Merge multiple directly related details if they naturally belong together (e.g., posture + role + action).
+   - Example:  
+     ✅ “Is there a priest in white and gold robes performing a ritual hand-washing while holding his hands above the basin to receive the water?”  
+     ❌ “Is there a priest?” / “Is the priest performing a ritual?” / “Is the priest holding his hands above the basin?” (too fragmented)
+
+5. **Spatial and Role Clarity**
+   - If positions are given, use frame-relative references (left, right, center) so questions can be visually grounded.
+   - For multi-person scenes, identify roles or actions that make each person distinguishable.
+
+6. **Question Style**
+   - Phrase neutrally for yes/no evaluation:
+     - “Is this image showing…?”
+     - “Is there a [person/role] who…?”
+     - “Are two people [doing action] while [context]?”
+     - “Is [role A] facing [role B] while [doing action]?”
+
+7. **No Cross-Question Dependence**
+   - Never refer to “the person mentioned earlier” or “the second person.”  
+   - If order matters, restate full context (e.g., “From left to right, is the man in a dark suit raising his right hand…”).
+
+---
+
+### ✅ Output Format
+
+Return the questions as a JSON array:
+
+```json
+{
+  "questions": [
+    "Question 1",
+    "Question 2",
+    "Question 3",
+    ...
+  ]
+}
+
+🧠 Key Reminders
+
+Do not invent or modify facts. Every question must come directly from the provided description.
+
+You can combine related details for natural phrasing, but keep each question clear and self-contained.
+
+Avoid environment-only questions.
+
+The goal is to produce a complete yet concise set of questions that together capture the entire described interaction scene.
+
+Stop after listing all necessary questions; do not answer them.
+
+Don't ask too many questions, we can keep roughly 2-3 questions for two people scene, 3-4 questions for 3 people scene, ... or even fewer, do not ask too many questions.

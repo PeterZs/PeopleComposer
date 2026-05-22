@@ -1,0 +1,230 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>DrawWaldoWorlds Evaluation Results</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    .meta { color: #444; margin: 8px 0 18px; }
+    code { background: #f5f5f5; padding: 1px 4px; border-radius: 3px; }
+    .sample { margin-bottom: 40px; padding-bottom: 24px; border-bottom: 1px solid #ddd; }
+    .prompt { margin-top: 12px; }
+    .questions { margin: 6px 0 10px; }
+    .q-label { font-weight: bold; }
+    .image-row { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px; }
+    .image-item img { width: 100%; height: auto; border: 1px solid #ccc; }
+    .scores { margin-top: 6px; }
+    .score { padding: 2px 6px; border-radius: 3px; font-size: 12px; margin-right: 4px; display: inline-block; }
+    .score-yes { background: #d6f5d6; color: #1a7f1a; }
+    .score-no { background: #f8d7da; color: #a11a1a; }
+    .score-unknown { background: #eee; color: #555; }
+    .score-list { display: flex; flex-wrap: wrap; gap: 4px; }
+    .err { color: #a11a1a; background: #f8d7da; border: 1px solid #f1aeb5; padding: 10px; border-radius: 6px; }
+  </style>
+</head>
+<body>
+  <h1>DrawWaldoWorlds Evaluation Results</h1>
+  <div class="meta" id="meta" style="display:none"></div>
+  <div id="app"></div>
+
+  <script>
+    const qs = new URLSearchParams(location.search);
+
+    function normalizeBaseUrl(baseUrl) {
+      if (!baseUrl) return "";
+      return baseUrl.endsWith("/") ? baseUrl : (baseUrl + "/");
+    }
+
+    // Configure where to fetch scores/images from:
+    // - Default: load files next to this viewer.
+    // - Override with `?base=<URL>` where base points to the folder containing `score_*.json` and `prompt_{A,B,C}/`.
+    const baseUrl = normalizeBaseUrl(qs.get("base") || "");
+
+    const scoreAUrl = qs.get("scoreA") || (baseUrl ? `${baseUrl}score_A.json` : "./score_A.json");
+    const scoreBUrl = qs.get("scoreB") || (baseUrl ? `${baseUrl}score_B.json` : "./score_B.json");
+    const scoreCUrl = qs.get("scoreC") || (baseUrl ? `${baseUrl}score_C.json` : "./score_C.json");
+
+    function el(tag, attrs = {}, children = []) {
+      const node = document.createElement(tag);
+      for (const [k, v] of Object.entries(attrs)) {
+        if (k === "class") node.className = v;
+        else if (k === "text") node.textContent = v;
+        else node.setAttribute(k, v);
+      }
+      for (const child of children) node.appendChild(child);
+      return node;
+    }
+
+    function escapeHtml(s) {
+      const div = document.createElement("div");
+      div.textContent = String(s ?? "");
+      return div.innerHTML;
+    }
+
+    function scoreClass(score) {
+      const x = Number(score);
+      if (Number.isFinite(x)) {
+        if (x === 1) return "score score-yes";
+        if (x === 0) return "score score-no";
+      }
+      return "score score-unknown";
+    }
+
+    function extractRelativeImagePath(entry, promptLetter, sampleIndex, imageIndex) {
+      const p = entry?.new_image_path || entry?.original_image_path || "";
+      const m = String(p).match(/(prompt_[ABC]\/sample_\\d+\/[^\\/]+)$/);
+      if (m) return m[1];
+      return `prompt_${promptLetter}/sample_${sampleIndex}/${imageIndex}.jpg`;
+    }
+
+    function imageSrcFor(relativePath) {
+      if (baseUrl) return `${baseUrl}${relativePath}`;
+      return relativePath;
+    }
+
+    function renderPromptABQuestion(entries) {
+      const q = entries?.[0]?.questions?.[0];
+      const promptText = q?.question_sanitized || q?.question || "";
+      const text = `Does this image show \"${promptText}\"? Please answer Yes or No.`;
+      return el("div", { class: "questions" }, [
+        el("span", { class: "q-label", text: "Question:" }),
+        document.createTextNode(" " + text),
+      ]);
+    }
+
+    function renderPromptCQuestions(entries) {
+      const questions = entries?.[0]?.questions || [];
+      const wrap = el("div", { class: "questions" });
+      wrap.appendChild(el("span", { class: "q-label", text: "Questions:" }));
+      const list = el("ol");
+      for (const q of questions) {
+        const item = el("li");
+        item.textContent = q?.question || q?.prompt_text || "";
+        list.appendChild(item);
+      }
+      wrap.appendChild(document.createTextNode(" "));
+      wrap.appendChild(list);
+      return wrap;
+    }
+
+    function renderImageRow(promptLetter, sampleIndex, entries, isPromptC) {
+      const row = el("div", { class: "image-row" });
+      for (let i = 0; i < entries.length; i++) {
+        const entry = entries[i];
+        const relPath = extractRelativeImagePath(entry, promptLetter, sampleIndex, i);
+        const img = el("img", { src: imageSrcFor(relPath), alt: `sample ${sampleIndex}`, loading: "lazy" });
+
+        const scoresWrap = el("div", { class: "scores" });
+        if (isPromptC) {
+          const scoreList = el("div", { class: "score-list" });
+          for (const q of (entry?.questions || [])) {
+            const sc = q?.score;
+            scoreList.appendChild(el("span", { class: scoreClass(sc), text: String(sc) }));
+          }
+          scoresWrap.appendChild(scoreList);
+        } else {
+          const sc = entry?.average_score;
+          scoresWrap.appendChild(el("span", { class: scoreClass(sc), text: String(sc) }));
+        }
+
+        row.appendChild(el("div", { class: "image-item" }, [
+          img,
+          scoresWrap,
+        ]));
+      }
+      return row;
+    }
+
+    function sortedSampleKeys(samplesObj) {
+      return Object.keys(samplesObj || {}).sort((a, b) => Number(a) - Number(b));
+    }
+
+    async function loadJson(url) {
+      const res = await fetch(url);
+      if (!res.ok) throw new Error(`Failed to fetch ${url} (${res.status})`);
+      return await res.json();
+    }
+
+    function setMeta(metaNode, metaA, metaB, metaC) {
+      const parts = [];
+      const baseNote = baseUrl ? `base=${baseUrl}` : "base=(relative)";
+      parts.push(`Loaded scores from: ${escapeHtml(scoreAUrl)}, ${escapeHtml(scoreBUrl)}, ${escapeHtml(scoreCUrl)} (${escapeHtml(baseNote)})`);
+      const created = [metaA?.created_at, metaB?.created_at, metaC?.created_at].filter(Boolean);
+      if (created.length) parts.push(`created_at: ${escapeHtml(created.join(", "))}`);
+      metaNode.innerHTML = parts.join("<br>");
+    }
+
+    async function main() {
+      const app = document.getElementById("app");
+      const metaNode = document.getElementById("meta");
+
+      let scoreA, scoreB, scoreC;
+      try {
+        [scoreA, scoreB, scoreC] = await Promise.all([
+          loadJson(scoreAUrl),
+          loadJson(scoreBUrl),
+          loadJson(scoreCUrl),
+        ]);
+      } catch (e) {
+        app.appendChild(el("div", { class: "err", text: String(e?.message || e) }));
+        return;
+      }
+
+      if (qs.get("meta") === "1") {
+        metaNode.style.display = "";
+        setMeta(metaNode, scoreA?.meta, scoreB?.meta, scoreC?.meta);
+      }
+
+      const keysA = new Set(sortedSampleKeys(scoreA?.samples));
+      const keysB = new Set(sortedSampleKeys(scoreB?.samples));
+      const keysC = new Set(sortedSampleKeys(scoreC?.samples));
+      const sampleKeys = [...keysA].filter(k => keysB.has(k) && keysC.has(k)).sort((a, b) => Number(a) - Number(b));
+
+      for (const k of sampleKeys) {
+        const sampleIndex = Number(k);
+        const sampleDiv = el("div", { class: "sample", id: `sample-${sampleIndex}` }, [
+          el("h2", { text: `Sample ${sampleIndex}` }),
+        ]);
+
+        // Prompt A
+        {
+          const entries = scoreA.samples[k] || [];
+          const promptDiv = el("div", { class: "prompt prompt-a" }, [
+            el("h3", { text: "Prompt A" }),
+            renderPromptABQuestion(entries),
+            renderImageRow("A", sampleIndex, entries, false),
+          ]);
+          sampleDiv.appendChild(promptDiv);
+        }
+
+        // Prompt B
+        {
+          const entries = scoreB.samples[k] || [];
+          const promptDiv = el("div", { class: "prompt prompt-b" }, [
+            el("h3", { text: "Prompt B" }),
+            renderPromptABQuestion(entries),
+            renderImageRow("B", sampleIndex, entries, false),
+          ]);
+          sampleDiv.appendChild(promptDiv);
+        }
+
+        // Prompt C
+        {
+          const entries = scoreC.samples[k] || [];
+          const promptDiv = el("div", { class: "prompt prompt-c" }, [
+            el("h3", { text: "Prompt C" }),
+            renderPromptCQuestions(entries),
+            renderImageRow("C", sampleIndex, entries, true),
+          ]);
+          sampleDiv.appendChild(promptDiv);
+        }
+
+        app.appendChild(sampleDiv);
+      }
+    }
+
+    main();
+  </script>
+</body>
+</html>

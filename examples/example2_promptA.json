@@ -1,0 +1,96 @@
+{
+  "prompt_type": "A",
+  "sample_key": "2",
+  "variant_index": 0,
+  "general_prompt": "Two men are swearing in while a woman stands between them holding a book to support the ceremony.",
+  "variant": {
+    "width": 1024,
+    "height": 640,
+    "detailed_caption_list": [
+      "Foreground left, the man in a dark suit is swearing the oath; he faces right toward the woman while raising his right hand at shoulder height. His eyes stay on the open book she holds, torso angled slightly inward, with his left hand relaxed at his side as he recites the words.",
+      "Center frame, the woman supports the oath ceremony, standing between them and holding an open ceremonial book with both hands at chest level. She faces forward between the two men, subtly tilting the book so both can see, glancing left and right as she cues the next line.",
+      "Foreground right, the second man is swearing the oath; he faces left toward the woman with his right hand raised in the same gesture. He leans a half-step closer, attentive and composed, keeping his gaze on the book as he waits to repeat the next phrase."
+    ],
+    "layout_plan": [
+      [
+        0.05,
+        0.14,
+        0.36,
+        0.98
+      ],
+      [
+        0.37,
+        0.16,
+        0.63,
+        0.98
+      ],
+      [
+        0.64,
+        0.14,
+        0.95,
+        0.98
+      ]
+    ],
+    "rewrite_detailed_caption_list": [
+      {
+        "caption": "During a swearing-in ceremony, a man in a dark suit stands on the left side of the frame facing inward, raising his right hand at shoulder height as he recites the oath, his left arm resting by his side and his posture upright and formal.",
+        "segments": [
+          {
+            "tag": 0,
+            "text": "During a swearing-in ceremony, "
+          },
+          {
+            "tag": 1,
+            "text": "a man in a dark suit stands on the left side of the frame facing inward, raising his right hand at shoulder height as he recites the oath, his left arm resting by his side and his posture upright and formal."
+          }
+        ]
+      },
+      {
+        "caption": "During a swearing-in ceremony, a man in a dark suit stands on the left facing inward with his right hand raised as he speaks the oath. At center, a woman stands holding an open ceremonial book with both hands at chest height, angled slightly toward him so he can read along.",
+        "segments": [
+          {
+            "tag": 0,
+            "text": "During a swearing-in ceremony, "
+          },
+          {
+            "tag": 1,
+            "text": "a man in a dark suit stands on the left facing inward with his right hand raised as he speaks the oath. "
+          },
+          {
+            "tag": 2,
+            "text": "At center, a woman stands holding an open ceremonial book with both hands at chest height, angled slightly toward him so he can read along."
+          }
+        ]
+      },
+      {
+        "caption": "During a swearing-in ceremony, two men stand on either side raising their right hands to take the oath while a woman stands between them holding an open book for them to follow. The man on the left faces right toward the book with a formal, upright stance, and the man on the right faces left mirroring the gesture, both focused on the text as they repeat the words.",
+        "segments": [
+          {
+            "tag": 0,
+            "text": "During a swearing-in ceremony, "
+          },
+          {
+            "tag": 1,
+            "text": "two men stand on either side raising their right hands to take the oath "
+          },
+          {
+            "tag": 2,
+            "text": "while a woman stands between them holding an open book for them to follow. "
+          },
+          {
+            "tag": 1,
+            "text": "The man on the left faces right toward the book with a formal, upright stance, "
+          },
+          {
+            "tag": 3,
+            "text": "and the man on the right faces left mirroring the gesture, "
+          },
+          {
+            "tag": 0,
+            "text": "both focused on the text as they repeat the words."
+          }
+        ]
+      }
+    ]
+  }
+}

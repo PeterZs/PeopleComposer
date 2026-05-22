@@ -1,0 +1,57 @@
+# Minimal config for `inference.py`
+
+# -----------------
+# Model + checkpoint
+# -----------------
+model_name: "flux-dev"
+use_lora: true
+keep_ori_weights: true
+zero_init: false
+rank: 512
+single_blocks: null
+double_blocks: null
+text_lora: false
+pose_lora: true
+real_lora: false
+add_pose_clip: true
+
+# Optional local path to the model weights. If empty, inference.py downloads the
+# release checkpoint into checkpoint_cache_dir.
+checkpoint_path: ""
+checkpoint_repo_id: "lilyecho/people-composer"
+checkpoint_filename: ""
+checkpoint_cache_dir: "checkpoints/people-composer"
+
+# -----------------
+# Inference settings
+# -----------------
+resolution: 1024
+sample_steps: 50
+guidance: 4.0
+attn_mask_type: "mask_condition_for_real"
+use_v1_bbox: false
+offload_when_sample: true
+customize_txt_ids: true
+customize_img_ids: true
+
+# -----------------
+# Single-variant input
+# -----------------
+# Preferred minimal JSON format:
+# {
+#   "prompt_type": "B",
+#   "sample_key": "0",
+#   "variant_index": 0,
+#   "general_prompt": "...",   # optional
+#   "variant": { ... }         # REQUIRED
+# }
+single_variant_json: "examples/example0_promptB.json"
+prompt_type: "B"
+sample_key: "0"
+variant_index: 0
+seed: 976644629
+
+# -----------------
+# Output
+# -----------------
+output_dir: "outputs/example0"

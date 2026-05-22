@@ -1,0 +1,60 @@
+{
+  "prompt_type": "B",
+  "sample_key": "0",
+  "variant_index": 2,
+  "general_prompt": "Two men are participating in a religious hand-washing ceremony together.",
+  "variant": {
+    "width": 960,
+    "height": 704,
+    "detailed_caption_list": [
+      "The priest in white ceremonial robes is performing the hand-washing ritual on the left, facing right toward the assistant. In a three-quarter view with shoulders angled to the right, he holds his hands over the basin to be washed, watching water run across his palms as fine droplets catch colored light from the stained glass.",
+      "The assistant in black is pouring water to assist the rite on the right, facing left toward the priest. Close to the camera in a slight over-the-shoulder angle, they tip a polished jug so the stream falls into the basin over his hands, while their other hand steadies the basin, leaning forward to guide the flow accurately."
+    ],
+    "layout_plan": [
+      [
+        0.06,
+        0.14,
+        0.56,
+        0.98
+      ],
+      [
+        0.52,
+        0.16,
+        0.96,
+        0.98
+      ]
+    ],
+    "rewrite_detailed_caption_list": [
+      {
+        "caption": "Inside a church, a priest in white ceremonial robes stands at a small altar table and holds his hands over a metal basin, preparing for a ritual hand-washing.",
+        "segments": [
+          {
+            "tag": 0,
+            "text": "Inside a church, "
+          },
+          {
+            "tag": 1,
+            "text": "a priest in white ceremonial robes stands at a small altar table and holds his hands over a metal basin, preparing for a ritual hand-washing."
+          }
+        ]
+      },
+      {
+        "caption": "Inside a church, a priest in white ceremonial robes performs a ritual hand-washing while an assistant in black helps by pouring water from a jug into a basin. On the left, the priest faces right in three-quarter view, leaning slightly over the altar table with both hands held together above the basin as he watches the water rinse his fingers. On the right, the assistant faces left toward the priest, tilting a jug to pour a steady stream into the basin over the priest\u2019s hands, leaning in carefully to control the flow.",
+        "segments": [
+          {
+            "tag": 0,
+            "text": "Inside a church, a priest in white ceremonial robes performs a ritual hand-washing while an assistant in black helps by pouring water from a jug into a basin. "
+          },
+          {
+            "tag": 1,
+            "text": "On the left, the priest faces right in three-quarter view, leaning slightly over the altar table with both hands held together above the basin as he watches the water rinse his fingers. "
+          },
+          {
+            "tag": 2,
+            "text": "On the right, the assistant faces left toward the priest, tilting a jug to pour a steady stream into the basin over the priest\u2019s hands, leaning in carefully to control the flow."
+          }
+        ]
+      }
+    ]
+  }
+}

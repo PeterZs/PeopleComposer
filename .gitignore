@@ -1,0 +1,42 @@
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+
+# Environments
+.env
+.venv/
+venv/
+env/
+
+# Local credentials and API keys
+*_API_KEY.txt
+*_api_key.txt
+.netrc
+
+# Training and inference outputs
+outputs/
+output/
+multi_person/
+wandb/
+runs/
+checkpoints/
+*.pt
+*.pth
+*.ckpt
+*.safetensors
+
+# Local packaging and caches
+*.zip
+*.tar
+*.tar.gz
+.DS_Store
+._*
+__MACOSX/
+
+# Editor files
+.idea/
+.vscode/
+*.swp
+*.swo
